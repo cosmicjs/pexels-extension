@@ -12,7 +12,7 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-scripts": "^5.0.1",
-    "semantic-ui-react": "^0.79.1",
+    "semantic-ui-react": "^2.1.4",
     "unsplash-js": "^7.0.15"
   },
   "scripts": {
