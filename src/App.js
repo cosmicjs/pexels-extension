@@ -80,7 +80,7 @@ class App extends Component {
       },
     });
     axios({
-      url: photo.urls.full,
+      url: photo.src.original,
       method: "GET",
       responseType: "blob", // important
     }).then((response) => {
