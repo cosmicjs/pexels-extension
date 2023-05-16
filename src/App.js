@@ -233,7 +233,7 @@ class App extends Component {
       <main className="mx-auto mt-2 h-full w-full max-w-[1000px] p-2">
         <Tabs selectedTabClassName="bg-white text-black">
           <div className="flex w-full flex-col items-center justify-center">
-            <TabList className="flex w-max space-x-4 rounded-2xl bg-gray-200 p-2 text-black dark:bg-neutral-800 dark:text-white">
+            <TabList className="flex w-max space-x-4 rounded-2xl bg-[#F7FBFC] p-2 text-black dark:bg-[#11171A] dark:text-white">
               <Tab className="cursor-default rounded-lg p-2" id="photos">
                 Photos
               </Tab>
