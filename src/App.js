@@ -230,7 +230,7 @@ class App extends Component {
     const photos = this.state.data.photos;
     const videos = this.state.data.videos;
     return (
-      <main className="mx-auto h-full w-full max-w-[1000px] p-2">
+      <main className="mx-auto mt-2 h-full w-full max-w-[1000px] p-2">
         <Tabs selectedTabClassName="bg-white text-black">
           <div className="flex w-full flex-col items-center justify-center">
             <TabList className="flex w-max space-x-4 rounded-2xl bg-gray-200 p-2 text-black dark:bg-neutral-800 dark:text-white">
