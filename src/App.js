@@ -147,7 +147,7 @@ class App extends Component {
       },
     });
     axios({
-      url: video.videos.video_files[0].link,
+      url: video.video_files[0].link,
       method: "GET",
       responseType: "blob", // important
     }).then((response) => {
