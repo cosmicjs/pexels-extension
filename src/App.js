@@ -152,7 +152,7 @@ class App extends Component {
       responseType: "blob", // important
     }).then((response) => {
       const media = new Blob([response.data], {
-        type: photo ? "image/jpeg" : "video/mp4",
+        type: "video/mp4",
       });
       media.name = video.id + ".mp4";
       bucket.media
@@ -178,7 +178,6 @@ class App extends Component {
   }
   getButton(media) {
     const photos = this.state.data.photos;
-    const videos = this.state.data.videos;
     if (
       this.state.data.adding_media &&
       this.state.data.adding_media.indexOf(media.id) !== -1
