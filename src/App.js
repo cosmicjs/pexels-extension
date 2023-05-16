@@ -10,6 +10,7 @@ import EmptyState from "./components/EmptyState";
 import NoResultState from "./components/NoResultState";
 import _ from "lodash";
 import { PlusIcon, CheckIcon } from "@heroicons/react/20/solid";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "../src/styles/globals.css";
 import { createClient } from "pexels";
 
@@ -61,7 +62,24 @@ class App extends Component {
     }
   }
 
-  handleKeyUp(e) {
+  async getVideos(q) {
+    const query = q;
+    try {
+      await client.videos.search({ query, per_page: 20 }).then((res) => {
+        console.log(res.videos);
+        const videos = res.videos;
+        this.setState({
+          data: {
+            videos,
+          },
+        });
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  handlePhotoKeyUp(e) {
     if (!e.target.value) {
       this.setState({
         data: {},
@@ -70,7 +88,16 @@ class App extends Component {
     }
     this.getPhotos(e.target.value);
   }
-  handleAddToMedia(photo) {
+  handleVideoKeyUp(e) {
+    if (!e.target.value) {
+      this.setState({
+        data: {},
+      });
+      return;
+    }
+    this.getVideos(e.target.value);
+  }
+  handleAddPhotoToMedia(photo) {
     let adding_media = this.state.data.adding_media;
     if (!adding_media) adding_media = [];
     this.setState({
@@ -84,7 +111,9 @@ class App extends Component {
       method: "GET",
       responseType: "blob", // important
     }).then((response) => {
-      const media = new Blob([response.data], { type: "image/jpeg" });
+      const media = new Blob([response.data], {
+        type: photo ? "image/jpeg" : "video/mp4",
+      });
       media.name = photo.id + ".jpg";
       bucket.media
         .insertOne({
@@ -107,10 +136,50 @@ class App extends Component {
         });
     });
   }
-  getButton(photo) {
+
+  handleAddVideoToMedia(video) {
+    let adding_media = this.state.data.adding_media;
+    if (!adding_media) adding_media = [];
+    this.setState({
+      data: {
+        ...this.state.data,
+        adding_media: [...adding_media, video.id],
+      },
+    });
+    axios({
+      url: video.videos.video_files[0].link,
+      method: "GET",
+      responseType: "blob", // important
+    }).then((response) => {
+      const media = new Blob([response.data], {
+        type: photo ? "image/jpeg" : "video/mp4",
+      });
+      media.name = video.id + ".mp4";
+      bucket.media
+        .insertOne({
+          media: media,
+        })
+        .then(() => {
+          const adding_media = this.state.data.adding_media;
+          let added_media = this.state.data.added_media;
+          if (!added_media) added_media = [];
+          this.setState({
+            data: {
+              ...this.state.data,
+              adding_media: _.pull(adding_media, video.id),
+              added_media: [...added_media, video.id],
+            },
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  }
+  getButton(media) {
     if (
       this.state.data.adding_media &&
-      this.state.data.adding_media.indexOf(photo.id) !== -1
+      this.state.data.adding_media.indexOf(media.id) !== -1
     )
       return (
         <div>
@@ -122,7 +191,7 @@ class App extends Component {
       );
     if (
       this.state.data.added_media &&
-      this.state.data.added_media.indexOf(photo.id) !== -1
+      this.state.data.added_media.indexOf(media.id) !== -1
     )
       return (
         <div>
@@ -138,7 +207,7 @@ class App extends Component {
       );
     return (
       <div>
-        <Button onClick={this.handleAddToMedia.bind(this, photo)}>
+        <Button onClick={this.handleAddPhotoToMedia.bind(this, media)}>
           <span className="mr-2 block sm:hidden md:block">Add to Media</span>
           <span className="mr-2 hidden sm:block md:hidden">Add Media</span>
           <PlusIcon
@@ -152,29 +221,75 @@ class App extends Component {
   }
   render() {
     const photos = this.state.data.photos;
+    const videos = this.state.data.videos;
     return (
       <main className="mx-auto h-full w-full max-w-[1000px] p-2">
-        <Header>
-          <Input onKeyUp={this.handleKeyUp.bind(this)} />
-          <NavIcons />
-        </Header>
-        <div>
-          {photos && (
-            <div className="mt-4 grid w-full grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:mt-6">
-              {photos.map((photo) => {
-                return (
-                  <div key={photo.id} className="relative w-full">
-                    <Photo src={photo.src.medium} photo={photo} url={photo.url}>
-                      {this.getButton(photo)}
-                    </Photo>
-                  </div>
-                );
-              })}
+        <Tabs selectedTabClassName="bg-white text-black">
+          <div className="flex w-full flex-col items-center justify-center">
+            <TabList className="flex w-max space-x-4 rounded-2xl bg-gray-200 p-2 text-black dark:bg-neutral-800 dark:text-white">
+              <Tab className="cursor-default rounded-lg p-2" id="photos">
+                Photos
+              </Tab>
+              <Tab className="cursor-default rounded-lg p-2" id="videos">
+                Videos
+              </Tab>
+            </TabList>
+          </div>
+          <TabPanel>
+            <Header>
+              <Input
+                placeholder="Search free high-resolution photos"
+                onKeyUp={this.handlePhotoKeyUp.bind(this)}
+              />
+              <NavIcons />
+            </Header>
+            <div>
+              {photos && (
+                <div className="mt-4 grid w-full grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:mt-6">
+                  {photos.map((photo) => {
+                    return (
+                      <div key={photo.id} className="relative w-full">
+                        <Photo src={photo.src.medium} url={photo.url}>
+                          {this.getButton(photo)}
+                        </Photo>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {!photos && <EmptyState />}
+              {photos && photos.length <= 0 && <NoResultState />}
             </div>
-          )}
-          {!photos && <EmptyState />}
-          {photos && photos.length <= 0 && <NoResultState />}
-        </div>
+          </TabPanel>
+          <TabPanel>
+            <Header>
+              <Input
+                placeholder="Search free high-resolution videos"
+                onKeyUp={this.handleVideoKeyUp.bind(this)}
+              />
+              <NavIcons />
+            </Header>
+            <div>
+              {videos && (
+                <div className="mt-4 grid w-full grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:mt-6">
+                  {videos.map((video) => {
+                    return (
+                      <div key={video.id} className="relative w-full">
+                        <Photo src={video.image} url={video.url}>
+                          {this.getButton(video)}
+                        </Photo>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {!photos && <EmptyState />}
+              {photos && photos.length <= 0 && <NoResultState />}
+            </div>
+          </TabPanel>
+        </Tabs>
       </main>
     );
   }

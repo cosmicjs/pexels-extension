@@ -21,7 +21,7 @@ function EmptyState() {
           </g>
         </svg>
         <div className="text-center font-sans text-2xl text-neutral-800 dark:text-neutral-200">
-          Use the search bar above to find photos from{" "}
+          Use the search bar above to find photos or videos from{" "}
           <a href="https://pexels.com" target="_blank">
             <span className="font-semibold text-[#2AAAE2] decoration-[#2AAAE2] ">
               Pexels
