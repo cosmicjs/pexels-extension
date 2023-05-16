@@ -1,7 +1,7 @@
-# Unsplash Photos Extension
+# Pexels Photos Extension
 Search and add [Pexels](https://pexels.com) photos to your Cosmic Bucket.
 
-![Unsplash Photos](https://imgix.cosmicjs.com/5fc0b990-f3cb-11ed-985a-3383d9405b5e-pexels.png?w=2000&auto=format)
+![Pexels Photos](https://imgix.cosmicjs.com/5fc0b990-f3cb-11ed-985a-3383d9405b5e-pexels.png?w=2000&auto=format)
 ## Installation
 [Go to this extension](https://www.cosmicjs.com/marketplace/extensions/pexels) and click "Install Extension" to easily add Pexels photos to your Cosmic Bucket.
 
