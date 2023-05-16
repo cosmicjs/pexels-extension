@@ -177,6 +177,8 @@ class App extends Component {
     });
   }
   getButton(media) {
+    const photos = this.state.data.photos;
+    const videos = this.state.data.videos;
     if (
       this.state.data.adding_media &&
       this.state.data.adding_media.indexOf(media.id) !== -1
@@ -207,7 +209,13 @@ class App extends Component {
       );
     return (
       <div>
-        <Button onClick={this.handleAddPhotoToMedia.bind(this, media)}>
+        <Button
+          onClick={
+            photos
+              ? this.handleAddPhotoToMedia.bind(this, media)
+              : this.handleAddVideoToMedia.bind(this, media)
+          }
+        >
           <span className="mr-2 block sm:hidden md:block">Add to Media</span>
           <span className="mr-2 hidden sm:block md:hidden">Add Media</span>
           <PlusIcon
